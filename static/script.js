@@ -15,7 +15,7 @@ document.getElementById("productForm").addEventListener("submit", function(event
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        fetchProducts();
+        fetchProducts(); // Refresh the product list after adding
     })
     .catch(error => console.error("Error adding product:", error));
 });
@@ -25,10 +25,12 @@ function fetchProducts() {
     .then(response => response.json())
     .then(products => {
         const productList = document.getElementById("productList");
-        productList.innerHTML = "";
-        products.forEach(product => {
+        productList.innerHTML = ""; // Clear existing list
+
+        products.forEach((product, index) => {
             const li = document.createElement("li");
-            li.textContent = `${product.name} - ${product.category} - ₹${product.price}`;
+            li.textContent = `${index + 1}. ${product.name} - ${product.category} - ₹${product.price}`;
+            li.classList.add("list-group-item"); // Add Bootstrap styling if needed
             productList.appendChild(li);
         });
     })
