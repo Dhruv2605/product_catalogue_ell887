@@ -119,5 +119,5 @@ def get_products():
         return jsonify({"error": "Failed to fetch products", "details": str(e)}), 500
 
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 5000))  # Use Azure-assigned port, default to 5000 if not set
+    PORT = int(os.environ.get("PORT", 8080))  
     app.run(host="0.0.0.0", port=PORT)
