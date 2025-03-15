@@ -32,7 +32,7 @@ CLIENT_ID = "e6609120-0b10-459e-8bad-8decc04b3810"
 CLIENT_SECRET = "lfL8Q~yFlElMJ.VZbucbkTByLb_2zqw8DYDyIc1M"
 TENANT_ID = "624d5c4b-45c5-4122-8cd0-44f0f84e945d"
 AUTHORITY = f"https://login.microsoftonline.com/624d5c4b-45c5-4122-8cd0-44f0f84e945d"
-REDIRECT_URI = "https://productcatalogue-ell887-asfefaeehgbse0at.eastus2-01.azurewebsites.net"
+REDIRECT_URI = "https://productcatalogue-ell887-asfefaeehgbse0at.eastus2-01.azurewebsites.net/auth/callback"
 SCOPE = ["User.Read"]
 
 login_manager = LoginManager()
