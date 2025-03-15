@@ -18,3 +18,4 @@ six
 typing_extensions
 urllib3
 Werkzeug
+flask_login
