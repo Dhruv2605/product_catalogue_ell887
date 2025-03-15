@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalogue</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Product Catalogue</h1>
+
+    {% if user %}
+        <p>Welcome, {{ user['name'] }}!</p>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+        <a href="{{ url_for('login') }}">Login with Microsoft</a>
+    {% endif %}
+
+    {% if user %}  
+        <h2>Add a New Product</h2>
+        <form id="productForm">
+            <label>Name:</label>
+            <input type="text" id="name" required>
+            <label>Category:</label>
+            <input type="text" id="category" required>
+            <label>Price:</label>
+            <input type="number" id="price" required>
+            <button type="submit">Add Product</button>
+        </form>
+    {% endif %}
+
+    <h2>Product List</h2>
+    <button onclick="fetchProducts()">Load Products</button>
+    <ul id="productList"></ul>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
