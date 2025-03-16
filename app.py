@@ -100,8 +100,8 @@ def clear_products():
 
         deleted_products = []
         for item in items:
-            partition_key = item["name"]  # Use 'id' as partition key
-            container.delete_item(item["id"], partition_key=partition_key)
+            partition_key = item["productID"]  # Use 'id' as partition key
+            container.delete_item(item["name"], partition_key=partition_key)
             deleted_products.append(item["name"])
             logging.info(f"🗑️ Deleted product: {item['name']} (ID: {item['id']})")
 

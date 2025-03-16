@@ -10,7 +10,7 @@ document.getElementById("productForm").addEventListener("submit", function(event
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ id: Date.now().toString(), name, category, price })
+        body: JSON.stringify({ productID: Date.now().toString(), name, category, price })
     })
     .then(response => response.json())
     .then(data => {
