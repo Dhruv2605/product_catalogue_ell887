@@ -87,33 +87,46 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
-
-
-
 @app.route("/clear", methods=["DELETE"])
-@login_required
-def delete_product(id):
-    """Deletes a specific product from Cosmos DB when there is NO partition key."""
-    if not id:
-        return jsonify({"message": "Product ID is required"}), 400
-
+def clear_products():
+    """Deletes all products from Cosmos DB."""
     try:
-        # 🔍 Query the item first
-        query = f"SELECT * FROM c WHERE c.id = '{id}'"
+        # 🔍 Fetch all items
+        query = "SELECT * FROM c"
         items = list(container.query_items(query=query, enable_cross_partition_query=True))
 
         if not items:
-            return jsonify({"message": "Product not found in database"}), 404
+            return jsonify({"message": "No products found in database"}), 404
 
-        # 🗑️ Delete the first matching item (Cosmos DB allows only one item per ID if no partition key)
-        item = items[0]  # Get the first found item
-        container.delete_item(item["id"])  # ✅ No partition key needed
+        # 🗑️ Delete items one by one
+        for item in items:
+            partition_key = item.get("productID")  # Use "category" as partition key
+            if not partition_key:
+                logging.error(f"⚠️ Missing partition key for item: {item}")
+                continue  # Skip item if partition key is missing
 
-        return jsonify({"message": "Product deleted successfully"}), 200
+            logging.info(f"🗑️ Deleting {item['id']} with partition_key={partition_key}")
+            container.delete_item(item["id"], partition_key=partition_key)
+
+        return jsonify({"message": "All products deleted successfully"}), 200
+
+    except KeyError as e:
+        logging.error(f"❌ KeyError: {str(e)}")
+        return jsonify({"message": "Failed to delete products", "error": str(e)}), 400
 
     except exceptions.CosmosHttpResponseError as e:
-        logging.error(f"❌ Error deleting product: {str(e)}")
-        return jsonify({"message": "Failed to delete product", "error": str(e)}), 500
+        logging.error(f"❌ Error deleting products: {str(e)}")
+        return jsonify({"message": "Failed to delete products", "error": str(e)}), 500
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -37,14 +37,22 @@ function fetchProducts() {
     .catch(error => console.error("Error fetching products:", error));
 }
 function clearProducts() {
-    if (confirm("Are you sure you want to delete all products?")) {
-        fetch("/clear", { method: "DELETE" })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            fetchProducts(); // Refresh the product list
-        })
-        .catch(error => console.error("Error clearing products:", error));
-    }
+    fetch("/clear", { 
+        method: "DELETE",
+        credentials: "include"  // ✅ Ensure session cookies are sent
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to clear products, possibly not logged in");
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.message); // ✅ Show success message
+        fetchProducts(); // ✅ Refresh product list
+    })
+    .catch(error => console.error("❌ Error clearing products:", error));
 }
+
+
 
