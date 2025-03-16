@@ -146,11 +146,19 @@ def add_product():
     try:
         data = request.json
         logging.info(f"📦 Received Product: {data}")
+
+        # Ensure productID is added (if missing)
+        if "productID" not in data:
+            data["productID"] = data.get("id", str(int(time.time())))  # Use 'id' or generate one
+
+        # Insert into Cosmos DB
         container.create_item(body=data)
         return jsonify({"message": "Product added"}), 201
+
     except Exception as e:
         logging.error(f"❌ Error adding product: {str(e)}")
         return jsonify({"error": "Failed to add product", "details": str(e)}), 500
+
 
 @app.route("/products", methods=["GET"])
 @login_required

@@ -4,13 +4,20 @@ document.getElementById("productForm").addEventListener("submit", function(event
     const name = document.getElementById("name").value;
     const category = document.getElementById("category").value;
     const price = document.getElementById("price").value;
+    const productID = Date.now().toString();  // Generate a unique productID
 
     fetch("/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ id: Date.now().toString(), name, category, price })
+        body: JSON.stringify({ 
+            id: productID,       // Keep 'id' the same as 'productID'
+            productID: productID, // Explicitly add the productID field
+            name, 
+            category, 
+            price 
+        })
     })
     .then(response => response.json())
     .then(data => {
