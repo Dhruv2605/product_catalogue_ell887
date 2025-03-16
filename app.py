@@ -90,21 +90,24 @@ def logout():
 @app.route("/clear", methods=["DELETE"])
 @login_required
 def clear_products():
-    """API to delete all products from Cosmos DB."""
+    """Deletes all products from Cosmos DB."""
     try:
-        # Query all items in the container
         items = list(container.read_all_items())
-        
-        # Loop through each product and delete
+
+        if not items:
+            return jsonify({"message": "No products to delete!"}), 200
+
         for item in items:
-            container.delete_item(item["id"], partition_key=item["id"])  # Assuming id is partition key
-        
-        logging.info("🗑️ All products have been deleted from Cosmos DB")
+            partition_key = item.get("partitionKey", item.get("id"))  # Ensure correct partition key
+            container.delete_item(item["id"], partition_key=partition_key)
+
+        logging.info("🗑️ All products deleted successfully!")
         return jsonify({"message": "All products have been deleted successfully!"}), 200
-    
-    except Exception as e:
+
+    except exceptions.CosmosHttpResponseError as e:
         logging.error(f"❌ Error clearing products: {str(e)}")
         return jsonify({"error": "Failed to clear products", "details": str(e)}), 500
+
 
 
 @app.route("/protected")
