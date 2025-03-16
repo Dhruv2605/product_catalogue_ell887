@@ -98,7 +98,7 @@ def clear_products():
             return jsonify({"message": "No products to delete!"}), 200
 
         for item in items:
-            partition_key = item.get("partitionKey", item.get("id"))  # Ensure correct partition key
+            partition_key = item.get("category", item.get("id"))  # Use category as partition key if present
             container.delete_item(item["id"], partition_key=partition_key)
 
         logging.info("🗑️ All products deleted successfully!")
@@ -107,6 +107,7 @@ def clear_products():
     except exceptions.CosmosHttpResponseError as e:
         logging.error(f"❌ Error clearing products: {str(e)}")
         return jsonify({"error": "Failed to clear products", "details": str(e)}), 500
+
 
 
 
