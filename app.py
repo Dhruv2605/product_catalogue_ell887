@@ -89,10 +89,26 @@ def logout():
 
 
 
+@app.route("/delete-product/<id>", methods=["DELETE"])
+@login_required
+def delete_product(id):
+    """Deletes a specific product from Cosmos DB without requiring a partition key."""
+    if not id:
+        return jsonify({"message": "Product ID is required"}), 400
 
+    try:
+        item = container.get_item(id)  # ✅ Fetch the item first
+        if item:
+            container.delete_item(id)  # ✅ No partition key required
+            return jsonify({"message": "Product deleted successfully"}), 200
+        else:
+            return jsonify({"message": "Product not found in database"}), 404
 
-
-
+    except exceptions.CosmosResourceNotFoundError:
+        return jsonify({"message": "Product not found in database"}), 404
+    except Exception as e:
+        logging.error(f"❌ Error deleting product: {str(e)}")
+        return jsonify({"message": "Failed to delete product", "error": str(e)}), 500
 
 
 
