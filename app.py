@@ -86,25 +86,34 @@ def logout():
     session.clear()
     logout_user()
     return redirect(url_for("home"))
+
+
 @app.route("/clear", methods=["DELETE"])
 @login_required
 def clear_products():
-    """Force delete all products (Use only for testing)."""
+    """Deletes all products from Cosmos DB using the correct partition key."""
     try:
         items = list(container.read_all_items())
 
         if not items:
             return jsonify({"message": "No products to delete!"}), 200
 
+        deleted_products = []
         for item in items:
-            container.delete_item(item["id"], partition_key=item["id"])  # Try force-deleting
-            logging.info(f"🗑️ Deleted product: {item['name']} (ID: {item['id']})")
+            partition_key = item.get("productID")  # Ensure correct partition key
+            if partition_key:
+                container.delete_item(item["id"], partition_key=partition_key)
+                deleted_products.append(item["name"])  # Collect deleted products
+                logging.info(f"🗑️ Deleted product: {item['name']} (ID: {item['id']})")
+            else:
+                logging.warning(f"⚠️ Skipping deletion: Missing partition key in {item}")
 
-        return jsonify({"message": "All products have been force-deleted!"}), 200
+        return jsonify({"message": "Deleted successfully!", "deleted_products": deleted_products}), 200
 
     except exceptions.CosmosHttpResponseError as e:
         logging.error(f"❌ Error clearing products: {str(e)}")
         return jsonify({"error": "Failed to clear products", "details": str(e)}), 500
+
 
 
 
