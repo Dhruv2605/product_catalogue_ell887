@@ -4,7 +4,7 @@ document.getElementById("productForm").addEventListener("submit", function(event
     const name = document.getElementById("name").value;
     const category = document.getElementById("category").value;
     const price = document.getElementById("price").value;
-    const productID = Date.now().toString();  // Generate a unique productID
+    const productID = Date.now().toString();  
 
     fetch("/add", {
         method: "POST",
@@ -12,8 +12,8 @@ document.getElementById("productForm").addEventListener("submit", function(event
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ 
-            id: productID,       // Keep 'id' the same as 'productID'
-            productID: productID, // Explicitly add the productID field
+            id: productID,       
+            productID: productID, 
             name, 
             category, 
             price 
@@ -22,7 +22,7 @@ document.getElementById("productForm").addEventListener("submit", function(event
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        fetchProducts(); // Refresh the product list after adding
+        fetchProducts(); 
     })
     .catch(error => console.error("Error adding product:", error));
 });
@@ -32,12 +32,12 @@ function fetchProducts() {
     .then(response => response.json())
     .then(products => {
         const productList = document.getElementById("productList");
-        productList.innerHTML = ""; // Clear existing list
+        productList.innerHTML = ""; 
 
         products.forEach((product, index) => {
             const li = document.createElement("li");
             li.textContent = `${index + 1}. ${product.name} - ${product.category} - ₹${product.price}`;
-            li.classList.add("list-group-item"); // Add Bootstrap styling if needed
+            li.classList.add("list-group-item"); 
             productList.appendChild(li);
         });
     })
@@ -46,7 +46,7 @@ function fetchProducts() {
 function clearProducts() {
     fetch("/clear", { 
         method: "DELETE",
-        credentials: "include"  // ✅ Ensure session cookies are sent
+        credentials: "include"  
     })
     .then(response => {
         if (!response.ok) {
@@ -55,8 +55,8 @@ function clearProducts() {
         return response.json();
     })
     .then(data => {
-        alert(data.message); // ✅ Show success message
-        fetchProducts(); // ✅ Refresh product list
+        alert(data.message); 
+        fetchProducts(); 
     })
     .catch(error => console.error("❌ Error clearing products:", error));
 }

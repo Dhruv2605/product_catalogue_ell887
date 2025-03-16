@@ -6,13 +6,13 @@ from flask_login import LoginManager, login_user, logout_user, login_required, U
 from azure.cosmos import CosmosClient, exceptions
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.secret_key = "1234"  # Change this to a secure key
-app.config["DEBUG"] = True  # Enable debug mode
+app.secret_key = "1234" 
+app.config["DEBUG"] = True 
 
-# 🔹 Enable logging
+
 logging.basicConfig(level=logging.DEBUG)
 
-# 🔹 Hardcoded Cosmos DB Credentials
+
 ENDPOINT = "https://productscataloguecosmos.documents.azure.com:443/"
 KEY = "uKP2wzQIpMKcelyG5eAeNZs5kU5OBYQuzsiNT7aBDeIGmoOYk7vfDeNtD5UZ9sHZwJxN5WJrmKKcACDbudVqlQ=="
 DATABASE_NAME = "ProductsDB"
@@ -27,7 +27,7 @@ except exceptions.CosmosHttpResponseError as e:
     logging.error(f"❌ Cosmos DB Connection Failed: {str(e)}")
     raise
 
-# 🔹 Azure AD Credentials
+
 CLIENT_ID = "e6609120-0b10-459e-8bad-8decc04b3810"
 CLIENT_SECRET = "lfL8Q~yFlElMJ.VZbucbkTByLb_2zqw8DYDyIc1M"
 TENANT_ID = "624d5c4b-45c5-4122-8cd0-44f0f84e945d"
@@ -48,10 +48,9 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id, session.get("user", {}).get("name", "Unknown"))
 
-# 🔹 MSAL Instance for Token Management
 msal_app = msal.ConfidentialClientApplication(CLIENT_ID, CLIENT_SECRET, authority=AUTHORITY)
 
-# ------------------- ROUTES -------------------
+
 
 @app.route("/")
 def home():
@@ -91,19 +90,19 @@ def logout():
 def clear_products():
     """Deletes all products from Cosmos DB."""
     try:
-        # 🔍 Fetch all items
+     
         query = "SELECT * FROM c"
         items = list(container.query_items(query=query, enable_cross_partition_query=True))
 
         if not items:
             return jsonify({"message": "No products found in database"}), 404
 
-        # 🗑️ Delete items one by one
+      
         for item in items:
-            partition_key = item.get("productID")  # Use "category" as partition key
+            partition_key = item.get("productID")  
             if not partition_key:
                 logging.error(f"⚠️ Missing partition key for item: {item}")
-                continue  # Skip item if partition key is missing
+                continue  
 
             logging.info(f"🗑️ Deleting {item['id']} with partition_key={partition_key}")
             container.delete_item(item["id"], partition_key=partition_key)
@@ -117,19 +116,6 @@ def clear_products():
     except exceptions.CosmosHttpResponseError as e:
         logging.error(f"❌ Error deleting products: {str(e)}")
         return jsonify({"message": "Failed to delete products", "error": str(e)}), 500
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -147,11 +133,11 @@ def add_product():
         data = request.json
         logging.info(f"📦 Received Product: {data}")
 
-        # Ensure productID is added (if missing)
+       
         if "productID" not in data:
-            data["productID"] = data.get("id", str(int(time.time())))  # Use 'id' or generate one
+            data["productID"] = data.get("id", str(int(time.time())))  
 
-        # Insert into Cosmos DB
+      
         container.create_item(body=data)
         return jsonify({"message": "Product added"}), 201
 
