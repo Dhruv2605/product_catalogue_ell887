@@ -90,7 +90,7 @@ def logout():
 
 
 
-@app.route("/delete-product/<id>", methods=["DELETE"])
+@app.route("/clear", methods=["DELETE"])
 @login_required
 def delete_product(id):
     """Deletes a specific product from Cosmos DB when there is NO partition key."""
